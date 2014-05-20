@@ -1,0 +1,2 @@
+module Cuba::Tools
+end
