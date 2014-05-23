@@ -13,9 +13,10 @@ module Cuba::Tools
           events.trigger widget_name, widget_event, req.params
           # res.write "$('head > meta[name=csrf-token]').attr('content', '#{csrf_token}');"
           res.write '$(document).trigger("page:change");'
+          res.finish
+        else
+          res
         end
-
-        res.finish
       end
 
       private
@@ -27,16 +28,15 @@ module Cuba::Tools
       def res
         @res ||= begin
           if not widget_path
-            status, headers, body = @app.call(req.env)
+            @app.call(req.env)
           else
             status, headers, body = [
               200,
               {"Content-Type" => "text/javascript; charset=utf-8"},
               [""]
             ]
+            Rack::Response.new(body, status, headers)
           end
-
-          Rack::Response.new(body, status, headers)
         end
       end
 
