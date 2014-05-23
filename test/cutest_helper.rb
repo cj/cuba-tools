@@ -1,4 +1,5 @@
 require 'cuba'
 require 'cuba/tools'
+require 'cuba/test'
 require 'pry'
 require 'awesome_print'
