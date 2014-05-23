@@ -15,7 +15,7 @@ module Cuba::Tools
         @events       = events
         @widget_state = false
 
-        events.add_observer self, :trigger
+        events.add_observer self, :trigger_event
       end
 
       def set_state state
@@ -34,12 +34,21 @@ module Cuba::Tools
         end
       end
 
-      def trigger widget_name, widget_event, data = {}
+      def trigger widget_event, data = {}
+        widget_name = data.delete(:for)
+
+        req.env[:loaded_widgets].each do |n, w|
+          w.trigger_event (widget_name || req.params['widget_name']), widget_event,
+            data.to_deep_ostruct
+        end
+      end
+
+      def trigger_event widget_name, widget_event, data = {}
         if class_events = self.class.events
           class_events.each do |class_event, opts|
             if class_event.to_s == widget_event.to_s && (
-                widget_name == name or
-                opts[:for].to_s == widget_name
+              widget_name.to_s == name or
+              opts[:for].to_s == widget_name.to_s
             )
               if not opts[:with]
                 e = widget_event
@@ -111,22 +120,18 @@ module Cuba::Tools
       end
 
       def replace state, opts = {}
-        set_state state
-
         if !state.is_a? String
           opts[:state] = state
-          content = render_state, opts
+          content = render state, opts
           selector = '#' + id_for(state)
         else
           if !opts.key?(:content) and !opts.key?(:with)
-            content = render_state opts
+            content = render opts
           else
             content = opts[:content] || opts[:with]
           end
           selector = state
         end
-
-        reset_state
 
         res.write '$("' + selector + '").replaceWith("' + escape(content) + '");'
         # scroll to the top of the page just as if we went to the url directly

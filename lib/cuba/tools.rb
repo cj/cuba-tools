@@ -1,3 +1,4 @@
+require 'cuba'
 require 'cuba/tools/inflectors'
 
 module Cuba::Tools

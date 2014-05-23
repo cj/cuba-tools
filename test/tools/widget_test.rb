@@ -1,7 +1,6 @@
 require_relative '../cutest_helper'
 require "slim"
 require "cuba/render"
-require 'cgi'
 
 setup do
   Cuba.reset!
@@ -16,6 +15,9 @@ setup do
   Cuba.use Cuba::Tools::Widget::Middleware
   Cuba.plugin Cuba::Tools::Widget::Helpers
   Cuba.plugin Cuba::Render
+  Cuba.settings[:render][:options] ||= {
+    default_encoding: Encoding.default_external
+  }
   Cuba.define do
     def test_helper
       'test_helper'
@@ -71,7 +73,7 @@ scope "cuba/tools/widget/middleware" do
       'rack.input'     => {},
       'QUERY_STRING'   => 'widget_name=some_widget&widget_event=test'
     })
-    body = CGI.unescapeHTML resp.send('body').join
+    body = resp.send('body').join
 
     assert body[/moo/] != nil
     assert body[/cow/] != nil
@@ -84,19 +86,14 @@ scope "cuba/tools/widget/middleware" do
       'REQUEST_METHOD' => 'GET',
       'rack.input'     => {}
     })
-    # TODO: figure out why the html isn't decoded properly
-    # body = CGI.unescapeHTML resp.send('body').join
     body = resp.send('body').join
 
     assert body['test_helper'] != nil
     assert body['display'] != nil
-    assert body['some_widget_display'] != nil
+    assert body['id="some_widget_display"'] != nil
     assert body['some partial'] != nil
     assert body['some state'] != nil
     assert body['user_widget_method'] != nil
-    # TODO: figure out why the html isn't decoded properly
-    # and this is failing
-    # assert body['id="some_widget_some_state"'] != nil
-    assert body['some_widget_some_state'] != nil
+    assert body['id="some_widget_some_state"'] != nil
   end
 end

@@ -7,6 +7,14 @@ module Cuba::Tools
         if path = Widget.config.view_path
           Dir["#{path}/**/*.rb"].each  { |rb| require rb  }
         end
+
+        if defined?(Slim) && defined?(Slim::Engine)
+          Slim::Engine.set_default_options \
+            disable_escape: true,
+            use_html_safe: false,
+            disable_capture: false,
+            pretty: false
+        end
       end
 
       def method_missing(meth, *args, &block)
@@ -30,9 +38,7 @@ module Cuba::Tools
         html = block.call widget
 
         mab do
-          div(defaults) do
-            text! html
-          end
+          div(defaults) { html }
         end
       end
 
