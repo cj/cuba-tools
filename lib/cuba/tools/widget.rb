@@ -27,18 +27,20 @@ module Cuba::Tools
     end
 
     def load_all app, req, res
-      req.env[:loaded_widgets] ||= {}
-
       events = Events.new res, req
 
       if widget_event = req.params["widget_event"]
         widget_name = req.params["widget_name"]
       end
 
-      Widget.config.widgets.each do |name, widget|
-        req.env[:loaded_widgets][name] = Object.const_get(widget).new(
-          app, res, req, name, events
-        )
+      unless req.env[:loaded_widgets]
+        req.env[:loaded_widgets] ||= {}
+
+        Widget.config.widgets.each do |name, widget|
+          req.env[:loaded_widgets][name] = Object.const_get(widget).new(
+            app, res, req, name, events
+          )
+        end
       end
 
       [widget_name, widget_event, events]

@@ -20,7 +20,7 @@ module Cuba::Tools
       end
 
       def render_widget *args
-        Widget.load_all(self, req, res) unless req.env[:loaded_widgets]
+        Widget.load_all(self, req, res)
 
         if args.first.kind_of? Hash
           opts = args.first
@@ -36,7 +36,7 @@ module Cuba::Tools
         widget = req.env[:loaded_widgets][name]
 
         if widget.method(state).parameters.length > 0
-          widget.send state, opts.to_deep_struct
+          widget.send state, opts.to_deep_ostruct
         else
           widget.send state
         end
@@ -84,6 +84,11 @@ module Cuba::Tools
         mab do
           div(defaults) { html }
         end
+      end
+
+      def url_for_event event, options = {}
+        widget_name = options.delete(:widget_name) || req.env[:widget_name]
+        "http#{req.env['SERVER_PORT'] == '443' ? 's' : ''}://#{req.env['HTTP_HOST']}#{Widget.config.url_path}?widget_event=#{event}&widget_name=#{widget_name}" + (options.any?? '&' + URI.encode_www_form(options) : '')
       end
     end
   end

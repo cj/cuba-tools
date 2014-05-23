@@ -37,7 +37,7 @@ module Cuba::Tools
       def trigger widget_name, widget_event, data = {}
         if class_events = self.class.events
           class_events.each do |class_event, opts|
-            if class_event == widget_event && (
+            if class_event.to_s == widget_event.to_s && (
                 widget_name == name or
                 opts[:for].to_s == widget_name
             )
@@ -48,7 +48,7 @@ module Cuba::Tools
               end
 
               if method(e) and method(e).parameters.length > 0
-                send(e, data.to_deep_ostruct)
+                send(e, data)
               else
                 send(e)
               end
