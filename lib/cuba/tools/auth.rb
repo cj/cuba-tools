@@ -63,7 +63,7 @@ module Cuba::Tools
         if !defined? Devise
           require 'shield'
           app.plugin Shield::Helpers
-          app.use Shield::Middleware, "/login"
+          # app.use Shield::Middleware, "/login"
         else
           require 'warden'
           require 'devise'

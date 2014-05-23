@@ -19,6 +19,23 @@ module Cuba::Tools
         end
       end
 
+      def widget_div opts = {}, &block
+        defaults = {
+          id: "#{req.env[:widget_name]}_#{req.env[:widget_state]}"
+        }.merge opts
+
+        name   = req.env[:widget_name].to_sym
+        widget = req.env[:loaded_widgets][name]
+
+        html = block.call widget
+
+        mab do
+          div(defaults) do
+            text! html
+          end
+        end
+      end
+
       def render_widget *args
         Widget.load_all(self, req, res)
 
@@ -42,53 +59,17 @@ module Cuba::Tools
         end
       end
 
-      def replace state, opts = {}
-        set_state state
-
-        if !state.is_a? String
-          opts[:state] = state
-          content = render_state, opts
-          selector = '#' + id_for(state)
-        else
-          if !opts.key?(:content) and !opts.key?(:with)
-            content = render_state opts
-          else
-            content = opts[:content] || opts[:with]
-          end
-          selector = state
-        end
-
-        reset_state
-
-        res.write '$("' + selector + '").replaceWith("' + escape(content) + '");'
-        # scroll to the top of the page just as if we went to the url directly
-        # if opts[:scroll_to_top]
-        #   res.write 'window.scrollTo(0, 0);'
-        # end
-      end
-
-      def escape js
-        js.to_s.gsub(/(\\|<\/|\r\n|\\3342\\2200\\2250|[\n\r"'])/) {|match| JS_ESCAPE[match] }
-      end
-
-      def widget_div opts = {}, &block
-        defaults = {
-          id: "#{req.env[:widget_name]}_#{req.env[:widget_state]}"
-        }.merge opts
-
-        name   = req.env[:widget_name].to_sym
-        widget = req.env[:loaded_widgets][name]
-
-        html = block.call widget
-
-        mab do
-          div(defaults) { html }
-        end
-      end
-
       def url_for_event event, options = {}
         widget_name = options.delete(:widget_name) || req.env[:widget_name]
         "http#{req.env['SERVER_PORT'] == '443' ? 's' : ''}://#{req.env['HTTP_HOST']}#{Widget.config.url_path}?widget_event=#{event}&widget_name=#{widget_name}" + (options.any?? '&' + URI.encode_www_form(options) : '')
+      end
+
+      def render_widgets
+        res.headers["Content-Type"] = "text/javascript; charset=utf-8"
+        widget_name, widget_event, events = Widget.load_all self, req, res
+        events.trigger widget_name, widget_event, req.params
+        # res.write "$('head > meta[name=csrf-token]').attr('content', '#{csrf_token}');"
+        res.write '$(document).trigger("page:change");'
       end
     end
   end

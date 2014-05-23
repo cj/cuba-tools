@@ -110,6 +110,39 @@ module Cuba::Tools
         Widget.config.view_path
       end
 
+      def replace state, opts = {}
+        set_state state
+
+        if !state.is_a? String
+          opts[:state] = state
+          content = render_state, opts
+          selector = '#' + id_for(state)
+        else
+          if !opts.key?(:content) and !opts.key?(:with)
+            content = render_state opts
+          else
+            content = opts[:content] || opts[:with]
+          end
+          selector = state
+        end
+
+        reset_state
+
+        res.write '$("' + selector + '").replaceWith("' + escape(content) + '");'
+        # scroll to the top of the page just as if we went to the url directly
+        # if opts[:scroll_to_top]
+        #   res.write 'window.scrollTo(0, 0);'
+        # end
+      end
+
+      def id_for state
+        "#{req.env[:widget_name]}_#{state}"
+      end
+
+      def escape js
+        js.to_s.gsub(/(\\|<\/|\r\n|\\3342\\2200\\2250|[\n\r"'])/) {|match| JS_ESCAPE[match] }
+      end
+
       class << self
         attr_accessor :events, :available_helper_methods
 
