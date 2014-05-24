@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "cuba-tools"
-  spec.version       = "0.0.6"
+  spec.version       = "0.0.7"
   spec.authors       = ["cj"]
   spec.email         = ["cjlazell@gmail.com"]
   spec.description   = %q{Contains a group of tools to extend cuba}
