@@ -62,6 +62,10 @@ module Cuba::Tools
           Signature::Token.new key, user.try(:api_secret)
         end
 
+        if defined? Rails
+          @request = req
+        end
+        
         sign_in user
       end
 
