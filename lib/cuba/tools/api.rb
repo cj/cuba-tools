@@ -65,7 +65,7 @@ module Cuba::Tools
         if defined? Rails
           @request = req
         end
-        
+
         sign_in user
       end
 

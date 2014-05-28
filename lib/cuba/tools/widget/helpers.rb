@@ -28,8 +28,11 @@ module Cuba::Tools
       end
 
       def widget_div opts = {}, &block
+        w_name  = req.env[:widget_name].gsub(/_/, '-')
+        w_state = req.env[:widget_state].gsub(/_/, '-')
+
         defaults = {
-          id: "#{req.env[:widget_name]}_#{req.env[:widget_state]}"
+          id: "#{w_name}-#{w_state}"
         }.merge opts
 
         name   = req.env[:widget_name].to_sym
