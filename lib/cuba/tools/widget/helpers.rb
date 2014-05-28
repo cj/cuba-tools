@@ -28,8 +28,8 @@ module Cuba::Tools
       end
 
       def widget_div opts = {}, &block
-        w_name  = req.env[:widget_name].gsub(/_/, '-')
-        w_state = req.env[:widget_state].gsub(/_/, '-')
+        w_name  = req.env[:widget_name].to_s.gsub(/_/, '-')
+        w_state = req.env[:widget_state].to_s.gsub(/_/, '-')
 
         defaults = {
           id: "#{w_name}-#{w_state}"
