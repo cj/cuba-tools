@@ -141,7 +141,10 @@ module Cuba::Tools
       end
 
       def id_for state
-        "#{req.env[:widget_name]}_#{state}"
+        w_name  = req.env[:widget_name].to_s.gsub(/_/, '-')
+        w_state = state.to_s.gsub(/_/, '-')
+
+        "#{w_name}-#{w_state}"
       end
 
       def escape js

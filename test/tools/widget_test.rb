@@ -90,10 +90,10 @@ scope "cuba/tools/widget/middleware" do
 
     assert body['test_helper'] != nil
     assert body['display'] != nil
-    assert body['id="some_widget_display"'] != nil
+    assert body['id="some-widget-display"'] != nil
     assert body['some partial'] != nil
     assert body['some state'] != nil
     assert body['user_widget_method'] != nil
-    assert body['id="some_widget_some_state"'] != nil
+    assert body['id="some-widget-some-state"'] != nil
   end
 end

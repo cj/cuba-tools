@@ -1,3 +1,5 @@
+require 'cuba/tools'
+
 class SomeWidget < Cuba::Tools::Widget::Base
   respond_to :test
 
