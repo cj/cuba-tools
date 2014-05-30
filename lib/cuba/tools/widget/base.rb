@@ -27,10 +27,12 @@ module Cuba::Tools
       end
 
       def render_state options = {}
-        if method(widget_state).parameters.length > 0
-          send(widget_state, options.to_deep_ostruct)
+        state = widget_state || options.delete(:state)
+
+        if method(state).parameters.length > 0
+          send(state, options.to_deep_ostruct)
         else
-          send(widget_state)
+          send(state)
         end
       end
 
@@ -122,11 +124,12 @@ module Cuba::Tools
       def replace state, opts = {}
         if !state.is_a? String
           opts[:state] = state
-          content = render state, opts
+          content = render_state opts
           selector = '#' + id_for(state)
         else
           if !opts.key?(:content) and !opts.key?(:with)
-            content = render opts
+            opts[:state] = caller[0][/`.*'/][1..-2]
+            content = render_state opts
           else
             content = opts[:content] || opts[:with]
           end
