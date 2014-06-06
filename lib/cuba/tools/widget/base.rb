@@ -27,12 +27,12 @@ module Cuba::Tools
       end
 
       def render_state options = {}
-        state = widget_state || options.delete(:state)
+        state = widget_state || options[:state]
 
         if method(state).parameters.length > 0
-          send(state, options.to_deep_ostruct)
+          public_send(state, options.to_deep_ostruct)
         else
-          send(state)
+          public_send(state)
         end
       end
 
