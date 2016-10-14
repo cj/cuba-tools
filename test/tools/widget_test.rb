@@ -60,7 +60,7 @@ scope "cuba/tools/widget/middleware" do
       'PATH_INFO' => '/',
       'rack.input'     => {}
     })
-    body = resp.send('body').join
+    body = resp.join
 
     assert body[/\$\(document\)/] == nil
     assert body[/default/] != nil
@@ -86,7 +86,7 @@ scope "cuba/tools/widget/middleware" do
       'REQUEST_METHOD' => 'GET',
       'rack.input'     => {}
     })
-    body = resp.send('body').join
+    body = resp.join
 
     assert body['test_helper'] != nil
     assert body['display'] != nil
